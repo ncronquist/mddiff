@@ -30,3 +30,11 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Generated files
+bin/
+
+# OS Specific
+
+## Mac OS
+.DS_Store
