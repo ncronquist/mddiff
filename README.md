@@ -25,6 +25,7 @@ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install
 go install github.com/spf13/cobra-cli@latest
 ```
 
+
 ### Development Process
 
 - Check linting and formatting
@@ -58,4 +59,19 @@ MDDIFF_VERSION=x.x.x make build
 
 ```sh
 make clean
+```
+
+
+### Developing CI Actions
+
+- Install the Act CLI to test GitHub Actions locally
+
+```sh
+brew install act
+```
+
+- Test the release GitHub Actions workflow
+
+```sh
+act release -e test/event.json
 ```
