@@ -40,4 +40,4 @@ test:
 
 clean:
 	$(info ******************** cleaning up ********************)
-	rm -rf $(BIN)
+	rm -rf $(BIN) mddiff
