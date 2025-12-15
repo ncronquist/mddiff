@@ -1,6 +1,7 @@
+// Package domain contains the core data structures and interfaces for mddiff.
 package domain
 
-// Asset represents a single file metadata
+// Asset represents a single file metadata.
 type Asset struct {
 	Path      string // Relative path including filename
 	Stem      string // Filename without extension
@@ -9,22 +10,25 @@ type Asset struct {
 	IsDir     bool
 }
 
-// DirectoryTree represents the result of a scan
+// DirectoryTree represents the result of a scan.
 type DirectoryTree struct {
 	RootPath string
 	Assets   map[string]Asset // Keyed by relative path
 }
 
-// DiffType enums
+// DiffType enums.
 type DiffType string
 
 const (
-	Missing  DiffType = "MISSING"  // In Source, not Target
-	Extra    DiffType = "EXTRA"    // In Target, not Source
-	Modified DiffType = "MODIFIED" // In both, content/ext differs
+	// Missing represents a file in Source but not Target.
+	Missing DiffType = "MISSING"
+	// Extra represents a file in Target but not Source.
+	Extra DiffType = "EXTRA"
+	// Modified represents a file in both but with different content.
+	Modified DiffType = "MODIFIED"
 )
 
-// DiffItem represents a single difference found
+// DiffItem represents a single difference found.
 type DiffItem struct {
 	Type    DiffType `json:"type"`
 	Path    string   `json:"path"`
@@ -33,7 +37,7 @@ type DiffItem struct {
 	TgtSize int64    `json:"tgt_size,omitempty"`
 }
 
-// DiffReport represents the full comparison report
+// DiffReport represents the full comparison report.
 type DiffReport struct {
 	SourceDir string     `json:"source_dir"`
 	TargetDir string     `json:"target_dir"`
@@ -44,12 +48,12 @@ type DiffReport struct {
 	} `json:"summary"`
 }
 
-// Scanner defines the interface for walking a directory
+// Scanner defines the interface for walking a directory.
 type Scanner interface {
 	Scan(rootPath string) (*DirectoryTree, error)
 }
 
-// AssetComparator defines the interface for comparing two assets
+// AssetComparator defines the interface for comparing two assets.
 type AssetComparator interface {
 	// Compare returns true if assets are considered "content modified"
 	// (e.g. size changed, or codec changed in V2)

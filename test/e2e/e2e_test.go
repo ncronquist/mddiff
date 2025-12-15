@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -9,7 +10,7 @@ import (
 	"testing"
 )
 
-// DiffReport structure matching the JSON output
+// DiffReport structure matching the JSON output.
 type DiffReport struct {
 	Items []struct {
 		Type   string `json:"type"`
@@ -36,19 +37,24 @@ func TestEndToEnd(t *testing.T) {
 		moduleRoot = wd
 	}
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
+	// nolint:gosec // Test file, running 'go build' on known package
+	buildCmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, ".")
 	buildCmd.Dir = moduleRoot
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("Failed to build binary: %v\nOutput: %s", err, string(out))
 	}
-	defer os.Remove(binaryPath)
+	defer func() {
+		_ = os.Remove(binaryPath)
+	}()
 
 	// 2. Setup Test Data
 	tempDir, err := os.MkdirTemp("", "mddiff-e2e-data")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		_ = os.RemoveAll(tempDir)
+	}()
 
 	srcDir := filepath.Join(tempDir, "src")
 	tgtDir := filepath.Join(tempDir, "tgt")
@@ -71,7 +77,8 @@ func TestEndToEnd(t *testing.T) {
 	mustWriteFile(t, filepath.Join(tgtDir, "movie.mp4"), "content") // Different ext
 
 	// 3. Run Binary with JSON output
-	cmd := exec.Command(binaryPath, srcDir, tgtDir, "--format", "json")
+	// nolint:gosec // Test file, running binary on test data
+	cmd := exec.CommandContext(context.Background(), binaryPath, srcDir, tgtDir, "--format", "json")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Command failed: %v\nOutput: %s", err, string(output))
@@ -125,13 +132,15 @@ func TestEndToEnd(t *testing.T) {
 }
 
 func mustMkdir(t *testing.T, path string) {
-	if err := os.MkdirAll(path, 0755); err != nil {
+	// G301: Expect directory permissions to be 0750 or less
+	if err := os.MkdirAll(path, 0o750); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func mustWriteFile(t *testing.T, path, content string) {
-	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+	// G306: Expect WriteFile permissions to be 0600 or less
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatal(err)
 	}
 }

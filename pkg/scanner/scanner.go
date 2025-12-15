@@ -1,3 +1,4 @@
+// Package scanner implements directory scanning logic.
 package scanner
 
 import (
@@ -8,12 +9,12 @@ import (
 	"mddiff/pkg/domain"
 )
 
-// LinearScanner implements the Scanner interface using filepath.WalkDir
+// LinearScanner implements the Scanner interface using filepath.WalkDir.
 type LinearScanner struct {
 	ignoredFiles map[string]struct{}
 }
 
-// NewLinearScanner creates a new scanner with the default ignore list
+// NewLinearScanner creates a new scanner with the default ignore list.
 func NewLinearScanner() *LinearScanner {
 	// V1 Ignore List: .DS_Store, Thumbs.db, .git, .idea, .vscode
 	ignoreList := []string{".DS_Store", "Thumbs.db", ".git", ".idea", ".vscode"}
@@ -27,7 +28,7 @@ func NewLinearScanner() *LinearScanner {
 	}
 }
 
-// Scan walks the directory and returns a DirectoryTree
+// Scan walks the directory and returns a DirectoryTree.
 func (s *LinearScanner) Scan(rootPath string) (*domain.DirectoryTree, error) {
 	assets := make(map[string]domain.Asset)
 
@@ -79,7 +80,6 @@ func (s *LinearScanner) Scan(rootPath string) (*domain.DirectoryTree, error) {
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, err
 	}

@@ -1,3 +1,4 @@
+// Package diff implements the logic for comparing directory trees.
 package diff
 
 import (
@@ -6,19 +7,19 @@ import (
 	"mddiff/pkg/domain"
 )
 
-// Engine handles the comparison logic
+// Engine handles the comparison logic.
 type Engine struct {
 	comparator domain.AssetComparator
 }
 
-// NewEngine creates a new diff engine with a specific comparator
+// NewEngine creates a new diff engine with a specific comparator.
 func NewEngine(comparator domain.AssetComparator) *Engine {
 	return &Engine{
 		comparator: comparator,
 	}
 }
 
-// Diff compares two directory trees and produces a report
+// Diff compares two directory trees and produces a report.
 func (e *Engine) Diff(source, target *domain.DirectoryTree) *domain.DiffReport {
 	report := &domain.DiffReport{
 		SourceDir: source.RootPath,
@@ -85,7 +86,7 @@ func (e *Engine) Diff(source, target *domain.DirectoryTree) *domain.DiffReport {
 }
 
 // makeIdentity creates a unique key based on directory and stem
-// e.g. "subdir/Movie"
+// e.g. "subdir/Movie".
 func makeIdentity(relPath, stem string) string {
 	dir := filepath.Dir(relPath)
 	if dir == "." {
@@ -94,11 +95,12 @@ func makeIdentity(relPath, stem string) string {
 	return filepath.Join(dir, stem)
 }
 
-// BasicComparator implements AsssetComparator for V1 (Size + Extension)
+// BasicComparator implements AsssetComparator for V1 (Size + Extension).
 type BasicComparator struct {
 	SizeThreshold int64
 }
 
+// Compare returns true if assets are considered "content modified" (e.g. size changed).
 func (c *BasicComparator) Compare(src, tgt domain.Asset) (bool, string) {
 	// Check Extension
 	if src.Extension != tgt.Extension {

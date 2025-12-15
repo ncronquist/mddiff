@@ -1,3 +1,4 @@
+// Package cmd is the CLI package for mddiff.
 package cmd
 
 import (
@@ -5,7 +6,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-
 	"mddiff/pkg/diff"
 	"mddiff/pkg/report"
 	"mddiff/pkg/scanner"
@@ -24,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Long: `mddiff is a tool for comparing two media directories and identifying
 differences between them (Missing, Extra, Modified).`,
 	Args: cobra.ExactArgs(2),
-	PreRunE: func(cmd *cobra.Command, args []string) error {
+	PreRunE: func(_ *cobra.Command, args []string) error {
 		// Validate Format
 		validFormats := map[string]bool{"json": true, "table": true, "markdown": true}
 		if !validFormats[format] {
@@ -57,7 +57,7 @@ func validateDir(path string) error {
 	return nil
 }
 
-func runDiff(cmd *cobra.Command, args []string) error {
+func runDiff(_ *cobra.Command, args []string) error {
 	sourcePath := args[0]
 	targetPath := args[1]
 
@@ -113,6 +113,7 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().StringVarP(&format, "format", "f", "table", "Output format (table|json|markdown)")
-	rootCmd.Flags().StringVar(&ignoreExt, "ignore-ext", "", "Comma-separated list of extensions to ignore (e.g. .txt,.nfo)")
+	rootCmd.Flags().
+		StringVar(&ignoreExt, "ignore-ext", "", "Comma-separated list of extensions to ignore (e.g. .txt,.nfo)")
 	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 }
