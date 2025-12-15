@@ -103,8 +103,14 @@ make clean
 brew install act
 ```
 
-- Test the release GitHub Actions workflow
+- Test the check workflow
 
 ```sh
-act release -e test/event.json
+make ci:check
+```
+
+- Test the release workflow
+
+```sh
+make ci:release
 ```
