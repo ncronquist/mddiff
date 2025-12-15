@@ -1,4 +1,4 @@
-version: 2
+version: "2"
 
 # -----------------------------------------------------------------------------
 # FORMATTERS
@@ -15,7 +15,7 @@ formatters:
     # gofumpt: strict formatting rules
     gofumpt:
       extra-rules: true
-      module-path: github.com/your-org/your-project # Set this for optimal grouping
+      module-path: mddiff # Set this for optimal grouping
 
     # gci: deterministic import ordering
     gci:
@@ -23,21 +23,17 @@ formatters:
       sections:
         - standard
         - default
-        - prefix(github.com/your-org/your-project) # Groups your internal modules separately
+        - prefix(mddiff) # Groups your internal modules separately
 
     # golines: shortens long lines
     golines:
       max-len: 120
-      base-formatter: gofumpt # Crucial: ensures golines output matches gofumpt style
 
 # -----------------------------------------------------------------------------
 # LINTERS
 # These tools analyze your code for bugs, complexity, and performance.
 # -----------------------------------------------------------------------------
-linters:
-  # Disable everything by default so we can explicitly whitelist the strict ones
-  disable-all: true
-  
+linters:  
   enable:
     # -- The Essentials --
     - errcheck    # Mandates that you handle all errors
@@ -65,48 +61,40 @@ linters:
 # -----------------------------------------------------------------------------
 # LINTER SETTINGS
 # -----------------------------------------------------------------------------
-linters-settings:
-  # Revive is the modern "golint". We configure it to be opinionated.
-  revive:
-    severity: error
-    rules:
-      - name: exported
-        disabled: false
-        arguments:
-          - checkPrivateReceivers
-      - name: package-comments
-        disabled: false
-      - name: error-naming
-        disabled: false
+  settings:
+    # Revive is the modern "golint". We configure it to be opinionated.
+    revive:
+      severity: error
+      rules:
+        - name: exported
+          disabled: false
+          arguments:
+            - checkPrivateReceivers
+        - name: package-comments
+          disabled: false
+        - name: error-naming
+          disabled: false
 
-  # Fail if a function has a complexity score > 15
-  gocyclo:
-    min-complexity: 15
+    # Fail if a function has a complexity score > 15
+    gocyclo:
+      min-complexity: 15
 
-  # Gocritic is a collection of "critics". We enable the important tags.
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - experimental
-      - opinionated
-      - performance
-      - style
+    # Gocritic is a collection of "critics". We enable the important tags.
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
 
-  # Security checks
-  gosec:
-    excludes:
-      - G104 # We use 'errcheck' for this instead, so duplicate ignore
+    # Security checks
+    gosec:
+      excludes:
+        - G104 # We use 'errcheck' for this instead, so duplicate ignore
 
 issues:
   # Maximum issues count per one linter. Set to 0 to disable.
   max-issues-per-linter: 0
   # Maximum count of issues with the same text. Set to 0 to disable.
   max-same-issues: 0
-  
-  # Exclude specific strict rules if they get too annoying (add as needed)
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - gocyclo
-        - errcheck
-        - gosec

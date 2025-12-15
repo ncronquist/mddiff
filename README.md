@@ -2,10 +2,41 @@
 
 Media Directory Diffing CLI
 
+## Installation
+
+```sh
+go install github.com/ncronquist/mddiff@latest
+```
+
 ## Usage
 
 ```sh
-mddiff path/to/dir1 path/to/dir2
+mddiff [source_dir] [target_dir] [flags]
+```
+
+### Flags
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--format`, `-f` | Output format (`table`, `json`, `markdown`) | `table` |
+| `--ignore-ext` | Comma-separated list of extensions to ignore | |
+| `--verbose`, `-v` | Enable verbose logging | `false` |
+
+### Examples
+
+**Standard Table Output:**
+```sh
+mddiff ./movies/A ./movies/B
+```
+
+**JSON Output for CI/CD:**
+```sh
+mddiff ./movies/A ./movies/B --format json
+```
+
+**Markdown Report:**
+```sh
+mddiff ./movies/A ./movies/B --format markdown > report.md
 ```
 
 ## Contributing
@@ -14,6 +45,8 @@ mddiff path/to/dir1 path/to/dir2
 ### Prerequisites
 
 - golangci-lint - run multiple linters in parallel
+  - **SUGGESTED INSTALLATION** - asdf
+  - Alternatively, use the curl command below
 
 ```sh
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.7.1
@@ -70,8 +103,14 @@ make clean
 brew install act
 ```
 
-- Test the release GitHub Actions workflow
+- Test the check workflow
 
 ```sh
-act release -e test/event.json
+make ci:check
+```
+
+- Test the release workflow
+
+```sh
+make ci:release
 ```

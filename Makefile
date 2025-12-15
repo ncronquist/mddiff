@@ -14,7 +14,7 @@ ifdef MDDIFF_VERSION
 	LDFLAGS += -ldflags "-X mddiff/cmd.AppVersion=$(MDDIFF_VERSION)"
 endif
 
-.PHONY: all build fmt lint test clean
+.PHONY: all build fmt lint test clean ci-check ci-release
 
 default: all
 
@@ -40,4 +40,12 @@ test:
 
 clean:
 	$(info ******************** cleaning up ********************)
-	rm -rf $(BIN)
+	rm -rf $(BIN) mddiff
+
+ci-check:
+	$(info ******************** running check workflow locally ********************)
+	act push -W .github/workflows/check.yaml
+
+ci-release:
+	$(info ******************** running release workflow locally ********************)
+	act release -e test/event.json -W .github/workflows/release.yaml
