@@ -2,10 +2,41 @@
 
 Media Directory Diffing CLI
 
+## Installation
+
+```sh
+go install github.com/ncronquist/mddiff@latest
+```
+
 ## Usage
 
 ```sh
-mddiff path/to/dir1 path/to/dir2
+mddiff [source_dir] [target_dir] [flags]
+```
+
+### Flags
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--format`, `-f` | Output format (`table`, `json`, `markdown`) | `table` |
+| `--ignore-ext` | Comma-separated list of extensions to ignore | |
+| `--verbose`, `-v` | Enable verbose logging | `false` |
+
+### Examples
+
+**Standard Table Output:**
+```sh
+mddiff ./movies/A ./movies/B
+```
+
+**JSON Output for CI/CD:**
+```sh
+mddiff ./movies/A ./movies/B --format json
+```
+
+**Markdown Report:**
+```sh
+mddiff ./movies/A ./movies/B --format markdown > report.md
 ```
 
 ## Contributing
