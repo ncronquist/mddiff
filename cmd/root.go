@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+
 	"mddiff/pkg/diff"
 	"mddiff/pkg/report"
 	"mddiff/pkg/scanner"

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"testing"
 )
 
@@ -18,7 +19,7 @@ func TestDirectoryHiding(t *testing.T) {
 		moduleRoot = wd
 	}
 
-	// nolint:gosec
+	// nolint:gosec // Test file, creating binary in temp dir
 	buildCmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, ".")
 	buildCmd.Dir = moduleRoot
 	if out, err := buildCmd.CombinedOutput(); err != nil {
@@ -58,7 +59,7 @@ func TestDirectoryHiding(t *testing.T) {
 	mustWriteFile(t, filepath.Join(tgtDir, "extra_non_empty", "file.txt"), "content")
 
 	// 3. Run Binary with JSON output
-	// nolint:gosec
+	// nolint:gosec // Test file, running binary on test data
 	cmd := exec.CommandContext(context.Background(), binaryPath, srcDir, tgtDir, "--format", "json")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -75,9 +76,10 @@ func TestDirectoryHiding(t *testing.T) {
 	var extraPaths []string
 
 	for _, item := range report.Items {
-		if item.Type == "MISSING" {
+		switch item.Type {
+		case "MISSING":
 			missingPaths = append(missingPaths, item.Path)
-		} else if item.Type == "EXTRA" {
+		case "EXTRA":
 			extraPaths = append(extraPaths, item.Path)
 		}
 	}
@@ -106,10 +108,5 @@ func TestDirectoryHiding(t *testing.T) {
 }
 
 func contains(slice []string, val string) bool {
-	for _, item := range slice {
-		if item == val {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, val)
 }

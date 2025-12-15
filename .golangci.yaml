@@ -15,7 +15,7 @@ formatters:
     # gofumpt: strict formatting rules
     gofumpt:
       extra-rules: true
-      module-path: github.com/your-org/your-project # Set this for optimal grouping
+      module-path: mddiff # Set this for optimal grouping
 
     # gci: deterministic import ordering
     gci:
@@ -23,7 +23,7 @@ formatters:
       sections:
         - standard
         - default
-        - prefix(github.com/your-org/your-project) # Groups your internal modules separately
+        - prefix(mddiff) # Groups your internal modules separately
 
     # golines: shortens long lines
     golines:

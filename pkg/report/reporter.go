@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/olekukonko/tablewriter"
+
 	"mddiff/pkg/domain"
 )
 
@@ -128,47 +129,71 @@ func (r *MarkdownReporter) Report(report *domain.DiffReport, writer io.Writer) e
 		}
 	}
 
-	if len(missing) > 0 {
-		if _, err := fmt.Fprintf(writer, "## Missing Files (In Source, Not Target)\n"); err != nil {
-			return err
-		}
-		for _, item := range missing {
-			if _, err := fmt.Fprintf(writer, "- `%s` (Size: %d)\n", item.Path, item.SrcSize); err != nil {
-				return err
-			}
-		}
-		if _, err := fmt.Fprintln(writer); err != nil {
+	if err := r.printMissing(writer, missing); err != nil {
+		return err
+	}
+
+	if err := r.printModified(writer, modified); err != nil {
+		return err
+	}
+
+	if err := r.printExtra(writer, extra); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *MarkdownReporter) printMissing(writer io.Writer, items []domain.DiffItem) error {
+	if len(items) == 0 {
+		return nil
+	}
+	if _, err := fmt.Fprintf(writer, "## Missing Files (In Source, Not Target)\n"); err != nil {
+		return err
+	}
+	for _, item := range items {
+		if _, err := fmt.Fprintf(writer, "- `%s` (Size: %d)\n", item.Path, item.SrcSize); err != nil {
 			return err
 		}
 	}
+	if _, err := fmt.Fprintln(writer); err != nil {
+		return err
+	}
+	return nil
+}
 
-	if len(modified) > 0 {
-		if _, err := fmt.Fprintf(writer, "## Modified Files\n"); err != nil {
-			return err
-		}
-		for _, item := range modified {
-			if _, err := fmt.Fprintf(writer, "- `%s`: %s\n", item.Path, item.Reason); err != nil {
-				return err
-			}
-		}
-		if _, err := fmt.Fprintln(writer); err != nil {
+func (r *MarkdownReporter) printModified(writer io.Writer, items []domain.DiffItem) error {
+	if len(items) == 0 {
+		return nil
+	}
+	if _, err := fmt.Fprintf(writer, "## Modified Files\n"); err != nil {
+		return err
+	}
+	for _, item := range items {
+		if _, err := fmt.Fprintf(writer, "- `%s`: %s\n", item.Path, item.Reason); err != nil {
 			return err
 		}
 	}
+	if _, err := fmt.Fprintln(writer); err != nil {
+		return err
+	}
+	return nil
+}
 
-	if len(extra) > 0 {
-		if _, err := fmt.Fprintf(writer, "## Extra Files (In Target, Not Source)\n"); err != nil {
-			return err
-		}
-		for _, item := range extra {
-			if _, err := fmt.Fprintf(writer, "- `%s` (Size: %d)\n", item.Path, item.TgtSize); err != nil {
-				return err
-			}
-		}
-		if _, err := fmt.Fprintln(writer); err != nil {
+func (r *MarkdownReporter) printExtra(writer io.Writer, items []domain.DiffItem) error {
+	if len(items) == 0 {
+		return nil
+	}
+	if _, err := fmt.Fprintf(writer, "## Extra Files (In Target, Not Source)\n"); err != nil {
+		return err
+	}
+	for _, item := range items {
+		if _, err := fmt.Fprintf(writer, "- `%s` (Size: %d)\n", item.Path, item.TgtSize); err != nil {
 			return err
 		}
 	}
-
+	if _, err := fmt.Fprintln(writer); err != nil {
+		return err
+	}
 	return nil
 }

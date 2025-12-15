@@ -109,7 +109,7 @@ type BasicComparator struct {
 }
 
 // Compare returns true if assets are considered "content modified" (e.g. size changed).
-func (c *BasicComparator) Compare(src, tgt domain.Asset) (bool, string) {
+func (c *BasicComparator) Compare(src, tgt domain.Asset) (modified bool, reason string) {
 	// Check Extension
 	if src.Extension != tgt.Extension {
 		return true, "Extension changed: " + src.Extension + " -> " + tgt.Extension

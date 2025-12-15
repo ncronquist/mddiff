@@ -23,6 +23,7 @@ type DiffReport struct {
 	} `json:"summary"`
 }
 
+// nolint:gocyclo // End-to-end test with multiple steps
 func TestEndToEnd(t *testing.T) {
 	// 1. Build the binary
 	binaryPath := filepath.Join(os.TempDir(), "mddiff-e2e")
