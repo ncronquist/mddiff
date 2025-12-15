@@ -46,6 +46,10 @@ func (e *Engine) Diff(source, target *domain.DirectoryTree) *domain.DiffReport {
 
 		if !exists {
 			// Case: MISSING
+			if srcAsset.IsDir && hasChildren(source, srcAsset.Path) {
+				continue
+			}
+
 			report.Items = append(report.Items, domain.DiffItem{
 				Type:    domain.Missing,
 				Path:    srcAsset.Path,
@@ -74,6 +78,10 @@ func (e *Engine) Diff(source, target *domain.DirectoryTree) *domain.DiffReport {
 	for relPath, tgtAsset := range target.Assets {
 		id := makeIdentity(relPath, tgtAsset.Stem)
 		if !processedTargets[id] {
+			if tgtAsset.IsDir && hasChildren(target, tgtAsset.Path) {
+				continue
+			}
+
 			report.Items = append(report.Items, domain.DiffItem{
 				Type:    domain.Extra,
 				Path:    tgtAsset.Path,
@@ -118,4 +126,20 @@ func (c *BasicComparator) Compare(src, tgt domain.Asset) (bool, string) {
 	}
 
 	return false, ""
+}
+
+// hasChildren checks if there are any assets in the tree that are children of the given directory path.
+// It relies on the fact that children paths will have the directory path as a prefix.
+func hasChildren(tree *domain.DirectoryTree, dirPath string) bool {
+	// Add separator to ensure we match directory boundary
+	// e.g. "foo/bar" should not match "foo/barbaz"
+	prefix := dirPath + string(filepath.Separator)
+
+	for path := range tree.Assets {
+		if len(path) > len(prefix) &&
+			path[:len(prefix)] == prefix {
+			return true
+		}
+	}
+	return false
 }
